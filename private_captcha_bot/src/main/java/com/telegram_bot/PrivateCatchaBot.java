@@ -22,6 +22,8 @@ import org.telegram.telegrambots.meta.api.objects.ChatPermissions;
 
 import static java.lang.Math.toIntExact;
 
+import com.telegram_bot.handlers.commands.StartCommandHandler;
+
 public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
     private final TelegramClient telegramClient;
 
@@ -84,7 +86,19 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-            
+        
+        } else if (update.hasMessage() && update.getMessage().isCommand()){
+
+            if (update.getMessage().getText().equals("/start")) {
+
+                StartCommandHandler handler = new StartCommandHandler();
+
+               try {
+                    handler.handle(update, telegramClient);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
 
         } else if (update.hasCallbackQuery()) {
             
