@@ -6,6 +6,7 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.ChatPermissions;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -15,6 +16,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+
+import org.telegram.telegrambots.meta.api.methods.groupadministration.RestrictChatMember;
+import org.telegram.telegrambots.meta.api.objects.ChatPermissions;
 
 import static java.lang.Math.toIntExact;
 
@@ -35,8 +39,9 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
                 String userName = user.getUserName();
                 String firstName = user.getFirstName();
                 String lastName = user.getLastName();
-
+                
                 long chat_id = update.getMessage().getChatId();
+                long user_id = user.getId();
 
                 SendMessage message = SendMessage // Create a message object
                         .builder()
@@ -57,18 +62,41 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
                         )
                         .build();
                 
+                ChatPermissions permission = ChatPermissions
+                    .builder()
+                    .canSendMessages(false)
+                    .build();
+
+                RestrictChatMember restriction = RestrictChatMember
+                    .builder()
+                    .chatId(chat_id)
+                    .userId(user_id)
+                    .permissions(permission)
+                    .build();
+
                 try {
                     telegramClient.execute(message); // Sending our message object to user
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    telegramClient.execute(restriction); // Sending our message object to user
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
             }
 
         } else if (update.hasCallbackQuery()) {
+            
             String call_data = update.getCallbackQuery().getData();
 
             long message_id = update.getCallbackQuery().getMessage().getMessageId();
             long chat_id = update.getCallbackQuery().getMessage().getChatId();
+            
+            User from = update.getCallbackQuery().getFrom();
+
+            long user_id = from.getId();
 
             if (call_data.equals("Catcha_pass")) {
 
@@ -82,6 +110,24 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
 
                 try {
                     telegramClient.execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+
+                ChatPermissions permission = ChatPermissions
+                    .builder()
+                    .canSendMessages(true)
+                    .build();
+
+                RestrictChatMember release = RestrictChatMember
+                    .builder()
+                    .chatId(chat_id)
+                    .userId(user_id)
+                    .permissions(permission)
+                    .build();
+                
+                try {
+                    telegramClient.execute(release);
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
