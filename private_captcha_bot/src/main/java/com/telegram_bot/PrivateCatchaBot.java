@@ -33,59 +33,58 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
     public void consume(Update update) {
 
         if (update.hasMessage() && !update.getMessage().getNewChatMembers().isEmpty()) {
-            List<User> users = update.getMessage().getNewChatMembers();
+            User user = update.getMessage().getNewChatMembers().get(0);
             
-            for (User user: users){
-                String userName = user.getUserName();
-                String firstName = user.getFirstName();
-                String lastName = user.getLastName();
-                
-                long chat_id = update.getMessage().getChatId();
-                long user_id = user.getId();
+            String userName = user.getUserName();
+            String firstName = user.getFirstName();
+            String lastName = user.getLastName();
+            
+            long chat_id = update.getMessage().getChatId();
+            long user_id = user.getId();
 
-                SendMessage message = SendMessage // Create a message object
-                        .builder()
-                        .chatId(chat_id)
-                        .text("Hello " + firstName + " " + lastName + " ("+ userName + "). Are you a human?")
-                        .replyMarkup(
-                            InlineKeyboardMarkup
-                            .builder()
-                            .keyboardRow(
-                                new InlineKeyboardRow(
-                                    InlineKeyboardButton
-                                    .builder()
-                                    .text("Click to confirm")
-                                    .callbackData("Catcha_pass")
-                                    .build()
-                                )
-                            ).build()
-                        )
-                        .build();
-                
-                ChatPermissions permission = ChatPermissions
-                    .builder()
-                    .canSendMessages(false)
-                    .build();
-
-                RestrictChatMember restriction = RestrictChatMember
+            SendMessage message = SendMessage // Create a message object
                     .builder()
                     .chatId(chat_id)
-                    .userId(user_id)
-                    .permissions(permission)
+                    .text("Hello " + firstName + " " + lastName + " ("+ userName + "). Are you a human?")
+                    .replyMarkup(
+                        InlineKeyboardMarkup
+                        .builder()
+                        .keyboardRow(
+                            new InlineKeyboardRow(
+                                InlineKeyboardButton
+                                .builder()
+                                .text("Click to confirm")
+                                .callbackData("Catcha_pass")
+                                .build()
+                            )
+                        ).build()
+                    )
                     .build();
+            
+            ChatPermissions permission = ChatPermissions
+                .builder()
+                .canSendMessages(false)
+                .build();
 
-                try {
-                    telegramClient.execute(message); // Sending our message object to user
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+            RestrictChatMember restriction = RestrictChatMember
+                .builder()
+                .chatId(chat_id)
+                .userId(user_id)
+                .permissions(permission)
+                .build();
 
-                try {
-                    telegramClient.execute(restriction); // Sending our message object to user
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+            try {
+                telegramClient.execute(message); // Sending our message object to user
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
             }
+
+            try {
+                telegramClient.execute(restriction); // Sending our message object to user
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+            
 
         } else if (update.hasCallbackQuery()) {
             
