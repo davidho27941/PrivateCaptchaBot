@@ -13,13 +13,18 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParameterException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
+import picocli.CommandLine.Help.Ansi;
 
 class StartCommandOptions {
     
     @Option(names = {"-v", "--verbose"}, description = "Print verbose output")
     boolean verbose;
 
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "Provide help message.")
+    boolean helpRequested;
 }
 
 
@@ -27,6 +32,8 @@ public class StartCommandHandler implements GenericHandler {
 
     @Override
     public void handle(Update update, TelegramClient telegramClient) throws TelegramApiException {
+
+        long chat_id = update.getMessage().getChatId();
 
         String[] argv = update.getMessage().getText().split("\\s+");
 
@@ -42,17 +49,32 @@ public class StartCommandHandler implements GenericHandler {
             e.getMessage();
         }
 
-        System.out.println(opts.verbose);
+        if (opts.helpRequested) {
+            StringWriter sw = new StringWriter();
+            cmd.usage(new PrintWriter(sw), Ansi.OFF);
 
-        long chat_id = update.getMessage().getChatId();
+            String usageMessage = sw.toString();
+            
+            SendMessage message = SendMessage
+                .builder()
+                .chatId(chat_id)
+                .text(usageMessage)
+                .build();
+            telegramClient.execute(message);
+            
+        } else {
+            System.out.println(opts.verbose);
 
-        SendMessage message = SendMessage
-            .builder()
-            .chatId(chat_id)
-            .text("Hello")
-            .build();
+            SendMessage message = SendMessage
+                .builder()
+                .chatId(chat_id)
+                .text("Hello")
+                .build();
+            
+            telegramClient.execute(message);
 
-        telegramClient.execute(message);
+        }
+
 
     }
 }
