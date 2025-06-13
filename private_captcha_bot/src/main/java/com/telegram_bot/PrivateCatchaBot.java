@@ -89,7 +89,7 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
         
         } else if (update.hasMessage() && update.getMessage().isCommand()){
 
-            if (update.getMessage().getText().equals("/start")) {
+            if (update.getMessage().getText().startsWith("/start")) {
 
                 StartCommandHandler handler = new StartCommandHandler();
 
