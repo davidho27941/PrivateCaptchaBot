@@ -7,11 +7,43 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import com.telegram_bot.interfaces.GenericHandler;
 
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParameterException;
+
+import java.util.List;
+
+class StartCommandOptions {
+    
+    @Option(names = {"-v", "--verbose"}, description = "Print verbose output")
+    boolean verbose;
+
+}
+
+
 public class StartCommandHandler implements GenericHandler {
 
     @Override
     public void handle(Update update, TelegramClient telegramClient) throws TelegramApiException {
-        
+
+        String[] argv = update.getMessage().getText().split("\\s+");
+
+        StartCommandOptions opts = new StartCommandOptions();
+
+        CommandLine cmd = new CommandLine(opts);
+
+        try {
+
+            CommandLine.ParseResult result = cmd.parseArgs(argv);
+
+        } catch (ParameterException e) {
+            e.getMessage();
+        }
+
+        System.out.println(opts.verbose);
+
         long chat_id = update.getMessage().getChatId();
 
         SendMessage message = SendMessage
