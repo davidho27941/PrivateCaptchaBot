@@ -22,6 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.ChatPermissions;
 
 import static java.lang.Math.toIntExact;
 
+import com.telegram_bot.handlers.commands.BanUserCommandHandler;
 import com.telegram_bot.handlers.commands.StartCommandHandler;
 
 public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
@@ -89,9 +90,9 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
         
         } else if (update.hasMessage() && update.getMessage().isCommand()){
 
-            if (update.getMessage().getText().startsWith("/start")) {
+            if (update.getMessage().getText().startsWith("/ban")) {
 
-                StartCommandHandler handler = new StartCommandHandler();
+                BanUserCommandHandler handler = new BanUserCommandHandler();
 
                try {
                     handler.handle(update, telegramClient);
