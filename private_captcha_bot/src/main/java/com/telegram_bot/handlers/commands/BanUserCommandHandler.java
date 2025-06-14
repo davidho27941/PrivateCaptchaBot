@@ -1,8 +1,11 @@
 package com.telegram_bot.handlers.commands;
 
+import org.telegram.telegrambots.meta.api.objects.ChatPermissions;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.RestrictChatMember;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import com.telegram_bot.interfaces.GenericHandler;
@@ -18,17 +21,23 @@ import java.io.StringWriter;
 import java.util.List;
 import picocli.CommandLine.Help.Ansi;
 
-class StartCommandOptions {
-    
-    @Option(names = {"-v", "--verbose"}, description = "Print verbose output")
-    boolean verbose;
+class BanUserCommandOptions {
+    @Parameters
+    List<String> params;
+
+    @Option(names = {"-d", "--duration"}, description = "Ban duration.")
+    int duration;
+
+    @Option(names = {"--uid"}, description = "User ID.")
+    long uid;
 
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "Provide help message.")
     boolean helpRequested;
+
 }
 
 
-public class StartCommandHandler implements GenericHandler {
+public class BanUserCommandHandler implements GenericHandler {
 
     @Override
     public void handle(Update update, TelegramClient telegramClient) throws TelegramApiException {
@@ -37,7 +46,7 @@ public class StartCommandHandler implements GenericHandler {
 
         String[] argv = update.getMessage().getText().split("\\s+");
 
-        StartCommandOptions opts = new StartCommandOptions();
+        BanUserCommandOptions opts = new BanUserCommandOptions();
 
         CommandLine cmd = new CommandLine(opts);
 
@@ -54,27 +63,48 @@ public class StartCommandHandler implements GenericHandler {
             cmd.usage(new PrintWriter(sw), Ansi.OFF);
 
             String usageMessage = sw.toString();
-            
+
             SendMessage message = SendMessage
                 .builder()
                 .chatId(chat_id)
                 .text(usageMessage)
                 .build();
+
             telegramClient.execute(message);
-            
+
         } else {
-            System.out.println(opts.verbose);
+
+            long user_id = Long.parseLong(opts.params.get(1));
+            
+            ChatPermissions permission = ChatPermissions
+                .builder()
+                .canSendMessages(false)
+                .build();
+
+            RestrictChatMember restriction = RestrictChatMember
+                .builder()
+                .chatId(chat_id)
+                .userId(user_id)
+                .permissions(permission)
+                .build();
+            
+            try {
+                telegramClient.execute(restriction);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+                return;
+            }
 
             SendMessage message = SendMessage
                 .builder()
                 .chatId(chat_id)
-                .text("Hello")
+                .text("User " + user_id + " has beed banned.")
                 .build();
-            
-            telegramClient.execute(message);
 
+            telegramClient.execute(message);
+            
         }
 
-
     }
+
 }
