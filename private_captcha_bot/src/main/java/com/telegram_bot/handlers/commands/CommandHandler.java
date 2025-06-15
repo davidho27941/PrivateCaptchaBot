@@ -3,9 +3,16 @@ package com.telegram_bot.handlers.commands;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import com.telegram_bot.interfaces.GenericHandler;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Help.Ansi;
 
 public class CommandHandler implements GenericHandler {
 
@@ -35,6 +42,14 @@ public class CommandHandler implements GenericHandler {
             .build();
 
         telegramClient.execute(message);
+    }
+
+    public void showHelpMessage(Update update, TelegramClient telegramClient, CommandLine cmd, long chat_id, int message_id) throws TelegramApiException {
+        StringWriter sw = new StringWriter();
+        cmd.usage(new PrintWriter(sw), Ansi.OFF);
+        String usageMessage = sw.toString();
+
+        sendMessage(update, telegramClient, chat_id, usageMessage, message_id);
     }
 
 }
