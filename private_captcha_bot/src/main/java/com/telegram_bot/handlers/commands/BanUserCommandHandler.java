@@ -37,7 +37,7 @@ class BanUserCommandOptions {
 }
 
 
-public class BanUserCommandHandler implements GenericHandler {
+public class BanUserCommandHandler extends CommandHandler {
 
     @Override
     public void handle(Update update, TelegramClient telegramClient) throws TelegramApiException {
@@ -61,16 +61,17 @@ public class BanUserCommandHandler implements GenericHandler {
         if (opts.helpRequested) {
             StringWriter sw = new StringWriter();
             cmd.usage(new PrintWriter(sw), Ansi.OFF);
-
             String usageMessage = sw.toString();
 
-            SendMessage message = SendMessage
-                .builder()
-                .chatId(chat_id)
-                .text(usageMessage)
-                .build();
+            sendMessage(update, telegramClient, chat_id, usageMessage);
 
-            telegramClient.execute(message);
+            // SendMessage message = SendMessage
+            //     .builder()
+            //     .chatId(chat_id)
+            //     .text(usageMessage)
+            //     .build();
+
+            // telegramClient.execute(message);
 
         } else {
 
