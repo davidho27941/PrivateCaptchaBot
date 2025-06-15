@@ -24,6 +24,7 @@ import static java.lang.Math.toIntExact;
 
 import com.telegram_bot.handlers.commands.BanUserCommandHandler;
 import com.telegram_bot.handlers.commands.StartCommandHandler;
+import com.telegram_bot.handlers.commands.UnBanUserCommandHandler;
 
 public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
     private final TelegramClient telegramClient;
@@ -95,6 +96,14 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
                 BanUserCommandHandler handler = new BanUserCommandHandler();
 
                try {
+                    handler.handle(update, telegramClient);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (update.getMessage().getText().startsWith("/unban")) {
+                UnBanUserCommandHandler handler = new UnBanUserCommandHandler();
+
+                try {
                     handler.handle(update, telegramClient);
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
