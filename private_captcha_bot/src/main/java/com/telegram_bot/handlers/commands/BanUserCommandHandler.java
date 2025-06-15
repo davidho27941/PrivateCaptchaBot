@@ -1,11 +1,11 @@
 package com.telegram_bot.handlers.commands;
 
-import org.telegram.telegrambots.meta.api.objects.ChatPermissions;
+// import org.telegram.telegrambots.meta.api.objects.ChatPermissions;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
-import org.telegram.telegrambots.meta.api.methods.groupadministration.RestrictChatMember;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.BanChatMember;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import com.telegram_bot.interfaces.GenericHandler;
@@ -43,6 +43,7 @@ public class BanUserCommandHandler extends CommandHandler {
     public void handle(Update update, TelegramClient telegramClient) throws TelegramApiException {
 
         long chat_id = update.getMessage().getChatId();
+        int message_id = update.getMessage().getMessageId();
 
         String[] argv = update.getMessage().getText().split("\\s+");
 
@@ -63,47 +64,42 @@ public class BanUserCommandHandler extends CommandHandler {
             cmd.usage(new PrintWriter(sw), Ansi.OFF);
             String usageMessage = sw.toString();
 
-            sendMessage(update, telegramClient, chat_id, usageMessage);
+            sendMessage(update, telegramClient, chat_id, usageMessage, message_id);
 
-            // SendMessage message = SendMessage
-            //     .builder()
-            //     .chatId(chat_id)
-            //     .text(usageMessage)
-            //     .build();
-
-            // telegramClient.execute(message);
 
         } else {
 
             long user_id = Long.parseLong(opts.params.get(1));
-            
-            ChatPermissions permission = ChatPermissions
-                .builder()
-                .canSendMessages(false)
-                .build();
 
-            RestrictChatMember restriction = RestrictChatMember
+            BanChatMember banAction = BanChatMember
                 .builder()
                 .chatId(chat_id)
                 .userId(user_id)
-                .permissions(permission)
                 .build();
+
+            // ChatPermissions permission = ChatPermissions
+            //     .builder()
+            //     .canSendMessages(false)
+            //     .build();
+
+            // RestrictChatMember restriction = RestrictChatMember
+            //     .builder()
+            //     .chatId(chat_id)
+            //     .userId(user_id)
+            //     .permissions(permission)
+            //     .build();
             
             try {
-                telegramClient.execute(restriction);
+                telegramClient.execute(banAction);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
                 return;
             }
-
-            SendMessage message = SendMessage
-                .builder()
-                .chatId(chat_id)
-                .text("User " + user_id + " has beed banned.")
-                .build();
-
-            telegramClient.execute(message);
             
+            String message = "User " + user_id + " has beed banned.";
+
+            sendMessage(update, telegramClient, chat_id, message, message_id);
+
         }
 
     }
