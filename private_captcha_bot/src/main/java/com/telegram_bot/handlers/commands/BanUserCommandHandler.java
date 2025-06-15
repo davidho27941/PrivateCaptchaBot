@@ -60,11 +60,12 @@ public class BanUserCommandHandler extends CommandHandler {
         }
 
         if (opts.helpRequested) {
-            StringWriter sw = new StringWriter();
-            cmd.usage(new PrintWriter(sw), Ansi.OFF);
-            String usageMessage = sw.toString();
+            showHelpMessage(update, telegramClient, cmd, chat_id, message_id);
+            // StringWriter sw = new StringWriter();
+            // cmd.usage(new PrintWriter(sw), Ansi.OFF);
+            // String usageMessage = sw.toString();
 
-            sendMessage(update, telegramClient, chat_id, usageMessage, message_id);
+            // sendMessage(update, telegramClient, chat_id, usageMessage, message_id);
 
 
         } else {
