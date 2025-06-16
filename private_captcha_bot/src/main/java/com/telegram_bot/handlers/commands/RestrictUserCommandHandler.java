@@ -136,7 +136,7 @@ public class RestrictUserCommandHandler extends CommandHandler {
                 return;
             }
             
-            // String message = "User " + user_id + " has beed unbanned.";
+            String message = "The permission of User " + user_id + " has beed changed.";
 
             sendMessage(update, telegramClient, chat_id, message, message_id);
 
