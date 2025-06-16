@@ -13,6 +13,7 @@ import com.telegram_bot.interfaces.GenericHandler;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Help.Ansi;
+import picocli.CommandLine.Model.CommandSpec;
 
 public class CommandHandler implements GenericHandler {
 
@@ -45,6 +46,11 @@ public class CommandHandler implements GenericHandler {
     }
 
     public void showHelpMessage(Update update, TelegramClient telegramClient, CommandLine cmd, long chat_id, int message_id) throws TelegramApiException {
+
+        CommandSpec spec = cmd.getCommandSpec();
+        spec.usageMessage().width(80);
+        spec.usageMessage().longOptionsMaxWidth(30);
+
         StringWriter sw = new StringWriter();
         cmd.usage(new PrintWriter(sw), Ansi.OFF);
         String usageMessage = sw.toString();
