@@ -70,6 +70,9 @@ class RestrictUserCommandOptions {
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "Provide help message.")
     boolean helpRequested;
 
+    @Option(names = "--allow-all", description = "Enable all permissions")
+    boolean allow_all;
+
 }
 
 
@@ -103,6 +106,23 @@ public class RestrictUserCommandHandler extends CommandHandler {
             System.out.println(opts.can_send_messages);
 
             long user_id = Long.parseLong(opts.params.get(1));
+
+            if (opts.allow_all) {
+                opts.can_send_messages      = true;
+                opts.can_send_audios        = true;
+                opts.can_send_documents     = true;
+                opts.can_send_photos        = true;
+                opts.can_send_videos        = true;
+                opts.can_send_video_notes   = true;
+                opts.can_send_voice_notes   = true;
+                opts.can_send_polls         = true;
+                opts.can_send_other_messages= true;
+                opts.can_add_web_page_previews = true;
+                opts.can_change_info        = true;
+                opts.can_invite_users       = true;
+                opts.can_pin_messages       = true;
+                opts.can_manage_topics      = true;
+            }
 
             ChatPermissions permission = ChatPermissions
                 .builder()
