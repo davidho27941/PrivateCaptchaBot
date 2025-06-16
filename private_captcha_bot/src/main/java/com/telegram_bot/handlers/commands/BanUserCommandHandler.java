@@ -21,6 +21,9 @@ import java.io.StringWriter;
 import java.util.List;
 import picocli.CommandLine.Help.Ansi;
 
+import java.time.Duration;
+import java.time.Instant;;
+
 class BanUserCommandOptions {
     @Parameters
     List<String> params;
@@ -38,6 +41,10 @@ class BanUserCommandOptions {
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "Provide help message.")
     boolean helpRequested;
 
+    @Option(names = {"-u", "--unit"}, 
+        description = "單位：${COMPLETION-CANDIDATES}（預設 ${DEFAULT-VALUE}）",
+        defaultValue = "MINUTES")
+    ChronoUnit unit;
 }
 
 
@@ -65,14 +72,18 @@ public class BanUserCommandHandler extends CommandHandler {
 
         if (opts.helpRequested) {
             showHelpMessage(update, telegramClient, cmd, chat_id, message_id);
-            // StringWriter sw = new StringWriter();
-            // cmd.usage(new PrintWriter(sw), Ansi.OFF);
-            // String usageMessage = sw.toString();
-
-            // sendMessage(update, telegramClient, chat_id, usageMessage, message_id);
-
 
         } else {
+
+            Instant now = Instant.now();
+
+            Instant future = now.plus(opts.duration, opts.unit);
+            
+            long futureEpochSeconds = future.getEpochSecond();
+            int futureSecondsInt = Math.toIntExact(futureEpochSeconds);
+
+            Integer futureSecondsInteger = futureSecondsInt;
+
             System.out.println(opts.revoke_messages);
 
             long user_id = Long.parseLong(opts.params.get(1));
@@ -81,21 +92,10 @@ public class BanUserCommandHandler extends CommandHandler {
                 .builder()
                 .chatId(chat_id)
                 .userId(user_id)
+                .untilDate(futureSecondsInt)
                 .revokeMessages(opts.revoke_messages)
                 .build();
 
-            // ChatPermissions permission = ChatPermissions
-            //     .builder()
-            //     .canSendMessages(false)
-            //     .build();
-
-            // RestrictChatMember restriction = RestrictChatMember
-            //     .builder()
-            //     .chatId(chat_id)
-            //     .userId(user_id)
-            //     .permissions(permission)
-            //     .build();
-            
             try {
                 telegramClient.execute(banAction);
             } catch (TelegramApiException e) {
