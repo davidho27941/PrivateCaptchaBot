@@ -62,12 +62,6 @@ public class UnBanUserCommandHandler extends CommandHandler {
 
         if (opts.helpRequested) {
             showHelpMessage(update, telegramClient, cmd, chat_id, message_id);
-            // StringWriter sw = new StringWriter();
-            // cmd.usage(new PrintWriter(sw), Ansi.OFF);
-            // String usageMessage = sw.toString();
-
-            // sendMessage(update, telegramClient, chat_id, usageMessage, message_id);
-
 
         } else {
 
@@ -79,18 +73,6 @@ public class UnBanUserCommandHandler extends CommandHandler {
                 .userId(user_id)
                 .build();
 
-            // ChatPermissions permission = ChatPermissions
-            //     .builder()
-            //     .canSendMessages(false)
-            //     .build();
-
-            // RestrictChatMember restriction = RestrictChatMember
-            //     .builder()
-            //     .chatId(chat_id)
-            //     .userId(user_id)
-            //     .permissions(permission)
-            //     .build();
-            
             try {
                 telegramClient.execute(banAction);
             } catch (TelegramApiException e) {
