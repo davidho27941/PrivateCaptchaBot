@@ -1,5 +1,6 @@
 package com.telegram_bot;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
@@ -21,7 +22,9 @@ import org.telegram.telegrambots.meta.api.methods.groupadministration.RestrictCh
 import org.telegram.telegrambots.meta.api.objects.ChatPermissions;
 
 import static java.lang.Math.toIntExact;
+import java.util.Map;
 
+import com.telegram_bot.handlers.commands.CommandHandler;
 import com.telegram_bot.handlers.commands.BanUserCommandHandler;
 import com.telegram_bot.handlers.commands.StartCommandHandler;
 import com.telegram_bot.handlers.commands.UnBanUserCommandHandler;
@@ -30,8 +33,14 @@ import com.telegram_bot.handlers.commands.RestrictUserCommandHandler;
 public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
     private final TelegramClient telegramClient;
 
+    private final Map<String, CommandHandler> commandHandlerMap = new HashMap<>();
+
     public PrivateCatchaBot(String botToken) {
         telegramClient = new OkHttpTelegramClient(botToken);
+
+        commandHandlerMap.put("/ban", new BanUserCommandHandler());
+        commandHandlerMap.put("/unban", new UnBanUserCommandHandler());
+        commandHandlerMap.put("/restrict", new RestrictUserCommandHandler());
     }
 
     @Override
@@ -92,36 +101,64 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
         
         } else if (update.hasMessage() && update.getMessage().isCommand()){
 
-            if (update.getMessage().getText().startsWith("/ban")) {
+            String text = update.getMessage().getText().trim();
+            String[] parted_text = text.split("\\s+", 2);
+            String commandKey = parted_text[0];
+            
+            CommandHandler handler = commandHandlerMap.get(commandKey);
 
-                BanUserCommandHandler handler = new BanUserCommandHandler();
-
+            if (handler != null) {
                 try {
                     handler.handle(update, telegramClient);
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-                
-            } else if (update.getMessage().getText().startsWith("/unban")) {
-                
-                UnBanUserCommandHandler handler = new UnBanUserCommandHandler();
-                
-                try {
-                    handler.handle(update, telegramClient);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+            } else {
+                long chatId = update.getMessage().getChatId();
 
-            }  else if (update.getMessage().getText().startsWith("/restrict")) {
-            
-                RestrictUserCommandHandler handler = new RestrictUserCommandHandler();
-            
+                SendMessage message = SendMessage
+                    .builder()
+                    .chatId(chatId)
+                    .text("Unknown command")
+                    .build();
+                    
                 try {
-                    handler.handle(update, telegramClient);
+                    telegramClient.execute(message);
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
             }
+
+            // if (update.getMessage().getText().startsWith("/ban")) {
+
+            //     BanUserCommandHandler handler = new BanUserCommandHandler();
+
+            //     try {
+            //         handler.handle(update, telegramClient);
+            //     } catch (TelegramApiException e) {
+            //         e.printStackTrace();
+            //     }
+                
+            // } else if (update.getMessage().getText().startsWith("/unban")) {
+                
+            //     UnBanUserCommandHandler handler = new UnBanUserCommandHandler();
+                
+            //     try {
+            //         handler.handle(update, telegramClient);
+            //     } catch (TelegramApiException e) {
+            //         e.printStackTrace();
+            //     }
+
+            // }  else if (update.getMessage().getText().startsWith("/restrict")) {
+            
+            //     RestrictUserCommandHandler handler = new RestrictUserCommandHandler();
+            
+            //     try {
+            //         handler.handle(update, telegramClient);
+            //     } catch (TelegramApiException e) {
+            //         e.printStackTrace();
+            //     }
+            // }
 
         } else if (update.hasCallbackQuery()) {
             
