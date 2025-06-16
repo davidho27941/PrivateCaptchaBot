@@ -28,6 +28,10 @@ class BanUserCommandOptions {
     @Option(names = {"-d", "--duration"}, description = "Ban duration.")
     int duration;
 
+    @Option(names = {"--del"}, defaultValue="false", description="Remove message or not.")
+    boolean revoke_messages;
+
+
     @Option(names = {"--uid"}, description = "User ID.")
     long uid;
 
@@ -69,6 +73,7 @@ public class BanUserCommandHandler extends CommandHandler {
 
 
         } else {
+            System.out.println(opts.revoke_messages);
 
             long user_id = Long.parseLong(opts.params.get(1));
 
@@ -76,6 +81,7 @@ public class BanUserCommandHandler extends CommandHandler {
                 .builder()
                 .chatId(chat_id)
                 .userId(user_id)
+                .revokeMessages(opts.revoke_messages)
                 .build();
 
             // ChatPermissions permission = ChatPermissions
