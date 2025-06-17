@@ -111,37 +111,6 @@ public class PrivateCatchaBot implements LongPollingSingleThreadUpdateConsumer {
         }
       }
 
-      // if (update.getMessage().getText().startsWith("/ban")) {
-
-      //     BanUserCommandHandler handler = new BanUserCommandHandler();
-
-      //     try {
-      //         handler.handle(update, telegramClient);
-      //     } catch (TelegramApiException e) {
-      //         e.printStackTrace();
-      //     }
-
-      // } else if (update.getMessage().getText().startsWith("/unban")) {
-
-      //     UnBanUserCommandHandler handler = new UnBanUserCommandHandler();
-
-      //     try {
-      //         handler.handle(update, telegramClient);
-      //     } catch (TelegramApiException e) {
-      //         e.printStackTrace();
-      //     }
-
-      // }  else if (update.getMessage().getText().startsWith("/restrict")) {
-
-      //     RestrictUserCommandHandler handler = new RestrictUserCommandHandler();
-
-      //     try {
-      //         handler.handle(update, telegramClient);
-      //     } catch (TelegramApiException e) {
-      //         e.printStackTrace();
-      //     }
-      // }
-
     } else if (update.hasCallbackQuery()) {
 
       String call_data = update.getCallbackQuery().getData();
