@@ -100,7 +100,7 @@ public class BanUserCommandHandler extends CommandHandler {
         return;
       }
 
-      String message = "User " + user_id + " has beed banned.";
+      String message = "User " + user_id + " has been banned.";
 
       sendMessage(update, telegramClient, chat_id, message, message_id);
     }

@@ -188,7 +188,7 @@ public class RestrictUserCommandHandler extends CommandHandler {
         return;
       }
 
-      String message = "The permission of User " + user_id + " has beed changed.";
+      String message = "The permission of User " + user_id + " has been changed.";
 
       sendMessage(update, telegramClient, chat_id, message, message_id);
     }
