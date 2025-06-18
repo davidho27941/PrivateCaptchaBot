@@ -69,7 +69,7 @@ public class UnBanUserCommandHandler extends CommandHandler {
         return;
       }
 
-      String message = "User " + user_id + " has beed unbanned.";
+      String message = "User " + user_id + " has been unbanned.";
 
       sendMessage(update, telegramClient, chat_id, message, message_id);
     }
