@@ -83,7 +83,7 @@ class RestrictUserCommandOptions {
   @Option(
       names = {"--invite"},
       defaultValue = "false",
-      description = "Can sinvite users.")
+      description = "Can invite users.")
   boolean can_invite_users;
 
   @Option(
