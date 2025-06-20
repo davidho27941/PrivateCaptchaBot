@@ -71,6 +71,11 @@ public class BanUserCommandHandler extends CommandHandler {
       showHelpMessage(update, telegramClient, cmd, chat_id, message_id);
 
     } else {
+      Long user_id = extractUserId(update, opts.params, 1);
+      if (user_id == null) {
+        showHelpMessage(update, telegramClient, cmd, chat_id, message_id);
+        return;
+      }
 
       Instant now = Instant.now();
 
@@ -83,7 +88,6 @@ public class BanUserCommandHandler extends CommandHandler {
 
       System.out.println(opts.revoke_messages);
 
-      long user_id = Long.parseLong(opts.params.get(1));
 
       BanChatMember banAction =
           BanChatMember.builder()
