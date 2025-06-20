@@ -134,10 +134,13 @@ public class RestrictUserCommandHandler extends CommandHandler {
       showHelpMessage(update, telegramClient, cmd, chat_id, message_id);
 
     } else {
+      Long user_id = extractUserId(update, opts.params, 1);
+      if (user_id == null) {
+        showHelpMessage(update, telegramClient, cmd, chat_id, message_id);
+        return;
+      }
 
       System.out.println(opts.can_send_messages);
-
-      long user_id = Long.parseLong(opts.params.get(1));
 
       if (opts.allow_all) {
         opts.can_send_messages = true;

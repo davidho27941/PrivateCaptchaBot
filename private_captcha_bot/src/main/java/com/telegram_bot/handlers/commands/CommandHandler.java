@@ -3,6 +3,7 @@ package com.telegram_bot.handlers.commands;
 import com.telegram_bot.interfaces.GenericHandler;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -50,5 +51,19 @@ public class CommandHandler implements GenericHandler {
     String markdownBlock2 = String.format("```%n%s%n```", usageMessage);
 
     sendMessage(update, telegramClient, chat_id, markdownBlock2, message_id);
+  }
+
+  public Long extractUserId(Update update, List<String> params, int index) {
+    if (params != null && params.size() > index) {
+      try {
+        return Long.parseLong(params.get(index));
+      } catch (NumberFormatException e) {
+        return null;
+      }
+    }
+    if (update.getMessage().getReplyToMessage() != null) {
+      return update.getMessage().getReplyToMessage().getFrom().getId();
+    }
+    return null;
   }
 }
